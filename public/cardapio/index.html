@@ -1347,7 +1347,7 @@ async function gerarPix(){
   const detalhes={};prodAtual.grupos.forEach((g,gi)=>{const sel=selecao[gi];if(sel)detalhes[g.titulo]=sel;});
   try{
     const r=await fetch("/api/public/pix",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({
-      produto:prodAtual.nome,valor_cents:Math.round(prodAtual.por*100),cpf,
+      produto:prodAtual.nome,valor_cents:Math.round(parseFloat(String(prodAtual.por).replace(".","").replace(",","."))*100),cpf,
       entrega:dataPorExtenso(diaEscolhido)+" às "+horaEscolhida,detalhes,utm})});
     const d=await r.json();
     if(!r.ok) throw new Error(d.error||"Erro ao gerar PIX");
