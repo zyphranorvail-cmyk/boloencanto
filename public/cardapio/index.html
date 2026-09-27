@@ -1055,7 +1055,7 @@ function semVela(gi){
 function textoHTML(gi,g){
   const v = selecao[gi] || "";
   return `<div class="caixa-cinza" style="margin-top:0">
-    <input type="text" id="campoTexto${gi}" maxlength="${g.max}" value="${v.replace(/"/g,&apos;&quot;&apos;)}"
+    <input type="text" id="campoTexto${gi}" maxlength="${g.max}" value="${v.replace(/"/g,'&quot;')}"
            placeholder="${g.placeholder||''}" oninput="setTexto(${gi},this.value)" style="margin-top:0">
     <div class="contagem"><span>${v.length}</span>/${g.max}</div>
   </div>`;
