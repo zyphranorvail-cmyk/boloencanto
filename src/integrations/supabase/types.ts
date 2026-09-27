@@ -14,7 +14,54 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      pedidos: {
+        Row: {
+          bravopay_id: string | null
+          comprovante_enviado_em: string | null
+          comprovante_path: string | null
+          cpf: string
+          created_at: string
+          detalhes: Json | null
+          entrega: string | null
+          id: string
+          pix_copia_cola: string | null
+          produto: string
+          status: string
+          utm: Json | null
+          valor_cents: number
+        }
+        Insert: {
+          bravopay_id?: string | null
+          comprovante_enviado_em?: string | null
+          comprovante_path?: string | null
+          cpf: string
+          created_at?: string
+          detalhes?: Json | null
+          entrega?: string | null
+          id?: string
+          pix_copia_cola?: string | null
+          produto: string
+          status?: string
+          utm?: Json | null
+          valor_cents: number
+        }
+        Update: {
+          bravopay_id?: string | null
+          comprovante_enviado_em?: string | null
+          comprovante_path?: string | null
+          cpf?: string
+          created_at?: string
+          detalhes?: Json | null
+          entrega?: string | null
+          id?: string
+          pix_copia_cola?: string | null
+          produto?: string
+          status?: string
+          utm?: Json | null
+          valor_cents?: number
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
