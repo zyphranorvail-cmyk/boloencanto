@@ -17,6 +17,7 @@ const BUMP_IDS = ["brigadeiros", "beijinhos", "ninho-nutella", "churros"] as con
 const Body = z.object({
   produto: z.string().min(1).max(200),
   valor_cents: z.number().int().min(500).max(1_000_000),
+  order_bumps: z.array(z.enum(BUMP_IDS)).max(BUMP_IDS.length).default([]),
   cpf: z.string().regex(/^\d{11}$/),
   entrega: z.string().max(200).optional(),
   detalhes: z.record(z.string(), z.unknown()).optional(),
@@ -33,7 +34,8 @@ export const Route = createFileRoute("/api/public/pix")({
         const parsed = Body.safeParse(await request.json().catch(() => null));
         if (!parsed.success) return json({ error: "Dados inválidos" }, 400);
         const d = parsed.data;
-        if (PRECOS[d.produto] !== d.valor_cents)
+        const basePrice = Object.hasOwn(PRECOS, d.produto) ? PRECOS[d.produto] : undefined;
+        if (basePrice === undefined || new Set(d.order_bumps).size !== d.order_bumps.length || basePrice + d.order_bumps.length * BUMP_CENTS !== d.valor_cents)
           return json({ error: "Produto ou valor inválido. Volte ao cardápio e tente novamente." }, 400);
         const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
@@ -44,7 +46,7 @@ export const Route = createFileRoute("/api/public/pix")({
             valor_cents: d.valor_cents,
             cpf: d.cpf,
             entrega: d.entrega ?? null,
-            detalhes: (d.detalhes ?? null) as never,
+            detalhes: ({ ...d.detalhes, order_bumps: d.order_bumps.map((id) => ({ id, quantidade: 50, valor_cents: BUMP_CENTS })) }) as never,
             utm: (d.utm ?? null) as never,
           })
           .select("id")
@@ -65,10 +67,10 @@ export const Route = createFileRoute("/api/public/pix")({
             amount_cents: d.valor_cents,
             method: "pix",
             customer: { cpf: d.cpf },
-            description: d.produto.slice(0, 300),
+            description: [d.produto, ...d.order_bumps.map((id) => `50 ${id}`)].join(" + ").slice(0, 300),
             external_reference: pedido.id,
             utm: d.utm,
-            expires_in: 3600,
+            expires_in: 1800,
           }),
         });
         const tx = (await res.json().catch(() => null)) as {
