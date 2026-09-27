@@ -388,16 +388,6 @@ document.head.appendChild(a);
     .rodape-aviso{background:rgba(255,255,255,.05);border-left:3px solid var(--rosa-claro);border-radius:0 10px 10px 0;padding:12px 16px;margin:20px 0 4px;font-size:12.5px;color:#d8cad1}
   }
 
-  .pix-box{text-align:center}
-  .pix-box h3{margin:0 0 6px;color:var(--rosa-esc)}
-  .pix-box input{width:100%;padding:13px;border:1.5px solid #ffd6e4;border-radius:10px;font-size:16px;margin:10px 0;box-sizing:border-box}
-  .pix-btn{width:100%;padding:14px;border:0;border-radius:12px;background:var(--rosa);color:#fff;font-weight:800;font-size:15px;cursor:pointer;margin-top:8px}
-  .pix-btn.sec{background:#fff;color:var(--rosa);border:1.5px solid var(--rosa)}
-  .pix-btn:disabled{opacity:.5}
-  .pix-qr{width:220px;height:220px;margin:10px auto;display:block;background:#fff}
-  .pix-code{font-size:12px;word-break:break-all;background:var(--rosa-bg);padding:10px;border-radius:10px;max-height:80px;overflow:auto;text-align:left}
-  .pix-erro{color:#c0392b;font-size:13px;margin-top:6px;min-height:16px}
-  .pix-ok{font-size:48px}
 </style>
 </head>
 <body>
@@ -1250,7 +1240,18 @@ function renderHorarios(){
   document.getElementById("btnFinalizar").disabled = !horaEscolhida;
 }
 function escolherHora(s){ horaEscolhida = s; renderHorarios(); }
-function finalizarAgendado(){ if(horaEscolhida){ fecharEntrega(); abrirPix(); } }
+function finalizarAgendado(){
+  if(!horaEscolhida || !prodAtual) return;
+  const detalhes={};prodAtual.grupos.forEach((g,gi)=>{const sel=selecao[gi];if(sel)detalhes[g.titulo]=sel;});
+  detalhes.observacoes=document.getElementById("obs").value;
+  sessionStorage.removeItem("boloPix");
+  sessionStorage.setItem("boloPedido",JSON.stringify({
+    produto:prodAtual.nome, imagem:prodAtual.img,
+    valor_cents:Math.round(parseFloat(String(prodAtual.por).replace(".","").replace(",","."))*100),
+    entrega:dataPorExtenso(diaEscolhido)+" às "+horaEscolhida, detalhes
+  }));
+  redirectWithParams("/checkout/index.html");
+}
 
 /* ==========================================================================
    12. CHECKOUT — preserva UTMs, igual à pizzaria
@@ -1301,78 +1302,6 @@ document.getElementById("ovEntrega").addEventListener("click", e=>{ if(e.target.
 iniciar();
 </script>
 
-<div class="overlay" id="ovPix">
-  <div class="modal-pequeno pix-box">
-    <button class="fechar" onclick="fecharPix()">×</button>
-    <div id="pixEtapa1">
-      <h3>Pagamento via PIX</h3>
-      <div id="pixResumo" style="font-size:14px;color:#555"></div>
-      <input id="pixCpf" inputmode="numeric" placeholder="Seu CPF" maxlength="14" oninput="mascaraCpf(this)">
-      <button class="pix-btn" id="pixGerar" onclick="gerarPix()">Gerar PIX</button>
-      <div class="pix-erro" id="pixErro1"></div>
-    </div>
-    <div id="pixEtapa2" style="display:none">
-      <h3>Escaneie ou copie o código</h3>
-      <img class="pix-qr" id="pixQr" alt="QR Code PIX">
-      <div class="pix-code" id="pixCodigo"></div>
-      <button class="pix-btn" onclick="copiarPix()" id="pixCopiar">Copiar código PIX</button>
-      <p style="font-size:13px;color:#555;margin:14px 0 4px">Já pagou? Envie o comprovante para confirmarmos seu pedido:</p>
-      <input type="file" id="pixArquivo" accept="image/*,application/pdf" style="display:none" onchange="enviarComprovante()">
-      <button class="pix-btn sec" id="pixEnviar" onclick="document.getElementById('pixArquivo').click()">Enviar comprovante</button>
-      <div class="pix-erro" id="pixErro2"></div>
-    </div>
-    <div id="pixEtapa3" style="display:none">
-      <div class="pix-ok">🎉</div>
-      <h3>Pedido recebido!</h3>
-      <p style="font-size:14px;color:#555">Recebemos seu pagamento. Seu bolo já vai para a produção.</p>
-      <button class="pix-btn" onclick="fecharPix()">Fechar</button>
-    </div>
-  </div>
-</div>
-<script>
-let pixPedido=null, pixTimer=null;
-function mascaraCpf(el){let v=el.value.replace(/\D/g,"").slice(0,11);v=v.replace(/(\d{3})(\d)/,"$1.$2").replace(/(\d{3})(\d)/,"$1.$2").replace(/(\d{3})(\d{1,2})$/,"$1-$2");el.value=v;}
-function cpfValido(c){if(!/^\d{11}$/.test(c)||/^(\d)\1+$/.test(c))return false;for(let t=9;t<11;t++){let s=0;for(let i=0;i<t;i++)s+=c[i]*(t+1-i);if(((s*10)%11)%10!=c[t])return false;}return true;}
-function pixEtapa(n){[1,2,3].forEach(i=>document.getElementById("pixEtapa"+i).style.display=i===n?"block":"none");}
-function abrirPix(){pixPedido=null;pixEtapa(1);document.getElementById("pixErro1").textContent="";
-  document.getElementById("pixResumo").innerHTML=`<b>${prodAtual.nome}</b> · ${moeda(prodAtual.por)}<br>📅 ${dataPorExtenso(diaEscolhido)} · 🕐 ${horaEscolhida}`;
-  document.getElementById("ovPix").classList.add("aberto");}
-function fecharPix(){document.getElementById("ovPix").classList.remove("aberto");clearInterval(pixTimer);}
-async function gerarPix(){
-  const cpf=document.getElementById("pixCpf").value.replace(/\D/g,""), err=document.getElementById("pixErro1"), btn=document.getElementById("pixGerar");
-  if(!cpfValido(cpf)){err.textContent="CPF inválido";return;}
-  err.textContent="";btn.disabled=true;btn.textContent="Gerando...";
-  const qs=new URLSearchParams(location.search), utm={};
-  ["utm_source","utm_medium","utm_campaign","utm_content","utm_term","fbclid","ttclid","gclid","src","sck"].forEach(k=>{if(qs.get(k))utm[k]=qs.get(k)});
-  const detalhes={};prodAtual.grupos.forEach((g,gi)=>{const sel=selecao[gi];if(sel)detalhes[g.titulo]=sel;});
-  try{
-    const r=await fetch("/api/public/pix",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({
-      produto:prodAtual.nome,valor_cents:Math.round(parseFloat(String(prodAtual.por).replace(".","").replace(",","."))*100),cpf,
-      entrega:dataPorExtenso(diaEscolhido)+" às "+horaEscolhida,detalhes,utm})});
-    const d=await r.json();
-    if(!r.ok) throw new Error(d.error||"Erro ao gerar PIX");
-    pixPedido=d.pedido_id;
-    const q=d.qr_code;
-    document.getElementById("pixQr").src = q && (q.startsWith("data:")||q.startsWith("http")) ? q
-      : q && q.length>200 && !q.startsWith("000201") ? "data:image/png;base64,"+q
-      : "https://api.qrserver.com/v1/create-qr-code/?size=220x220&data="+encodeURIComponent(d.copia_cola);
-    document.getElementById("pixCodigo").textContent=d.copia_cola;
-    pixEtapa(2);
-    clearInterval(pixTimer);pixTimer=setInterval(checarPix,5000);
-  }catch(e){err.textContent=e.message;}
-  finally{btn.disabled=false;btn.textContent="Gerar PIX";}
-}
-async function checarPix(){if(!pixPedido)return;try{const r=await fetch("/api/public/pix?id="+pixPedido);const d=await r.json();if(d.status==="PAID"){clearInterval(pixTimer);pixEtapa(3);}}catch(e){}}
-function copiarPix(){navigator.clipboard.writeText(document.getElementById("pixCodigo").textContent);const b=document.getElementById("pixCopiar");b.textContent="Copiado! ✓";setTimeout(()=>b.textContent="Copiar código PIX",2000);}
-async function enviarComprovante(){
-  const inp=document.getElementById("pixArquivo"),f=inp.files[0],err=document.getElementById("pixErro2"),btn=document.getElementById("pixEnviar");
-  if(!f||!pixPedido)return;err.textContent="";btn.disabled=true;btn.textContent="Enviando...";
-  const fd=new FormData();fd.append("pedido_id",pixPedido);fd.append("arquivo",f);
-  try{const r=await fetch("/api/public/comprovante",{method:"POST",body:fd});const d=await r.json();if(!r.ok)throw new Error(d.error||"Falha ao enviar");clearInterval(pixTimer);pixEtapa(3);}
-  catch(e){err.textContent=e.message;}finally{btn.disabled=false;btn.textContent="Enviar comprovante";inp.value="";}
-}
-document.getElementById("ovPix").addEventListener("click",e=>{if(e.target.id==="ovPix")fecharPix();});
-</script>
 </body>
 
 <!-- Mirrored from bolodeentregadores.site/? by HTTrack Website Copier/3.x [XR&CO'2014], Sat, 26 Sep 2026 06:28:20 GMT -->
