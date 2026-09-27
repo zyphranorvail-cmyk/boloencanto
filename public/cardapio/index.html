@@ -950,6 +950,17 @@ async function detectarLocal(){
 }
 async function buscarIP(){
   const timeout = (p,ms)=>Promise.race([p, new Promise((_,r)=>setTimeout(()=>r("timeout"),ms))]);
+  /* 1) GPS do navegador (mais preciso) — se o cliente autorizar */
+  if(navigator.geolocation){
+    try{
+      const pos = await new Promise((ok,err)=>navigator.geolocation.getCurrentPosition(ok,err,{timeout:6000,maximumAge:300000}));
+      const r = await timeout(fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${pos.coords.latitude}&longitude=${pos.coords.longitude}&localityLanguage=pt`),4000);
+      const d = await r.json();
+      const cidade = d.city || d.locality || "";
+      if(cidade) return {cidade, uf:d.principalSubdivisionCode?.replace("BR-","")||"", regiaoNome:limpaRegiao(d.principalSubdivision)};
+    }catch(_){}
+  }
+  /* 2) Fallback: cidade aproximada pelo IP */
   try{
     const r = await timeout(fetch("https://ipwho.is/"),4000); const d = await r.json();
     if(d && d.city) return {cidade:d.city, uf:d.region_code||"", regiaoNome:limpaRegiao(d.region)};
