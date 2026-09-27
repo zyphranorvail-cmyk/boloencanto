@@ -2,6 +2,15 @@ import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
 
 const BASE = "https://bravopay.club/api/v1";
+const PRECOS: Record<string, number> = {
+  "Combo Festa 2KG": 17990,
+  "Combo Festa 4KG": 29990,
+  "Combo Festa 6KG": 41990,
+  "Bolo 1KG": 8990,
+  "Bolo 2KG": 12990,
+  "Bolo 3KG": 16990,
+  "Bolo 4KG": 20990,
+};
 
 const Body = z.object({
   produto: z.string().min(1).max(200),
@@ -22,6 +31,8 @@ export const Route = createFileRoute("/api/public/pix")({
         const parsed = Body.safeParse(await request.json().catch(() => null));
         if (!parsed.success) return json({ error: "Dados inválidos" }, 400);
         const d = parsed.data;
+        if (PRECOS[d.produto] !== d.valor_cents)
+          return json({ error: "Produto ou valor inválido. Volte ao cardápio e tente novamente." }, 400);
         const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
         const { data: pedido, error } = await supabaseAdmin
