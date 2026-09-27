@@ -1,3 +1,5 @@
 - [x] Restaurar identificação, entrega e pagamento com o visual do checkout antigo.
 - [x] Gerar o PIX pela BravoPay somente após as etapas, guardar os dados e validar o preço no servidor.
 - [x] Testar o fluxo completo em desktop e celular.
+- [x] Adicionar quatro ofertas opcionais de docinhos ao lado do CPF e incluir escolhas no total e no PIX.
+- [x] Conferir seleção, remoção, navegação e total cobrado no fluxo de pagamento em celular e desktop.
