@@ -10,33 +10,53 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ApiPublicComprovanteRouteImport } from './routes/api/public/comprovante'
+import { Route as ApiPublicPixRouteImport } from './routes/api/public/pix'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicComprovanteRoute = ApiPublicComprovanteRouteImport.update({
+  id: '/api/public/comprovante',
+  path: '/api/public/comprovante',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicPixRoute = ApiPublicPixRouteImport.update({
+  id: '/api/public/pix',
+  path: '/api/public/pix',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/api/public/comprovante': typeof ApiPublicComprovanteRoute
+  '/api/public/pix': typeof ApiPublicPixRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/api/public/comprovante': typeof ApiPublicComprovanteRoute
+  '/api/public/pix': typeof ApiPublicPixRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/api/public/comprovante': typeof ApiPublicComprovanteRoute
+  '/api/public/pix': typeof ApiPublicPixRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/api/public/comprovante' | '/api/public/pix'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/api/public/comprovante' | '/api/public/pix'
+  id: '__root__' | '/' | '/api/public/comprovante' | '/api/public/pix'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ApiPublicComprovanteRoute: typeof ApiPublicComprovanteRoute
+  ApiPublicPixRoute: typeof ApiPublicPixRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +68,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/comprovante': {
+      id: '/api/public/comprovante'
+      path: '/api/public/comprovante'
+      fullPath: '/api/public/comprovante'
+      preLoaderRoute: typeof ApiPublicComprovanteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/pix': {
+      id: '/api/public/pix'
+      path: '/api/public/pix'
+      fullPath: '/api/public/pix'
+      preLoaderRoute: typeof ApiPublicPixRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ApiPublicComprovanteRoute: ApiPublicComprovanteRoute,
+  ApiPublicPixRoute: ApiPublicPixRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
