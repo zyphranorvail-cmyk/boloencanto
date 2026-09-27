@@ -11,6 +11,8 @@ const PRECOS: Record<string, number> = {
   "Bolo 3KG": 16990,
   "Bolo 4KG": 20990,
 };
+const BUMP_CENTS = 3996;
+const BUMP_IDS = ["brigadeiros", "beijinhos", "ninho-nutella", "churros"] as const;
 
 const Body = z.object({
   produto: z.string().min(1).max(200),
