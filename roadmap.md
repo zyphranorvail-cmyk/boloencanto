@@ -1,0 +1,3 @@
+- [x] Restaurar identificação, entrega e pagamento com o visual do checkout antigo.
+- [x] Gerar o PIX pela BravoPay somente após as etapas, guardar os dados e validar o preço no servidor.
+- [x] Testar o fluxo completo em desktop e celular.

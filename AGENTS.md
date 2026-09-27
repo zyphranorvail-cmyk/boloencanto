@@ -8,3 +8,6 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+- O catálogo estático mantém a personalização e agenda; o checkout local em `public/checkout/index.html` recebe o pedido por sessionStorage e preserva parâmetros de campanha, para reproduzir as etapas do checkout externo sem enviar dados ao gateway antigo.
+- A rota pública de PIX valida produto e preço a partir de uma lista fixa no servidor antes de cobrar, para impedir alteração de valor pelo navegador.
