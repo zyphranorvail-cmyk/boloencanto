@@ -4,3 +4,4 @@
 - [x] Adicionar quatro ofertas opcionais de docinhos ao lado do CPF e incluir escolhas no total e no PIX.
 - [x] Conferir seleção, remoção, navegação e total cobrado no fluxo de pagamento em celular e desktop.
 - [x] Salvar o telefone do cliente em coluna própria do pedido e recuperar os telefones existentes.
+- [ ] Corrigir falhas temporárias no envio de comprovantes e verificar o fluxo na página publicada.
