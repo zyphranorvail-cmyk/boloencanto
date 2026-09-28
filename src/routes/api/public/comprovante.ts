@@ -29,18 +29,35 @@ export const Route = createFileRoute("/api/public/comprovante")({
         const { data: p } = await supabaseAdmin.from("pedidos").select("id").eq("id", id).single();
         if (!p) return json({ error: "Pedido não encontrado" }, 404);
 
-        const path = `${id}/${Date.now()}.${ext}`;
-        const { error } = await supabaseAdmin.storage
-          .from("comprovantes")
-          .upload(path, await file.arrayBuffer(), { contentType: file.type });
-        if (error) {
-          console.error("upload comprovante", error);
+        const path = `${id}/${crypto.randomUUID()}.${ext}`;
+        const bytes = await file.arrayBuffer();
+        let uploadError: { message: string; status?: number | string | undefined } | null = null;
+        for (let attempt = 0; attempt < 3; attempt++) {
+          try {
+            const { error } = await supabaseAdmin.storage
+              .from("comprovantes")
+              .upload(path, bytes, { contentType: file.type, upsert: true });
+            uploadError = error;
+          } catch (error) {
+            uploadError = { message: error instanceof Error ? error.message : String(error) };
+          }
+          if (!uploadError) break;
+          const status = Number(uploadError.status);
+          if (status >= 400 && status < 500) break;
+          if (attempt < 2) await new Promise((resolve) => setTimeout(resolve, 400 * (attempt + 1)));
+        }
+        if (uploadError) {
+          console.error("upload comprovante", { message: uploadError.message, status: uploadError.status });
           return json({ error: "Falha ao enviar. Tente novamente." }, 500);
         }
-        await supabaseAdmin
+        const { error: updateError } = await supabaseAdmin
           .from("pedidos")
           .update({ comprovante_path: path, comprovante_enviado_em: new Date().toISOString() })
           .eq("id", id);
+        if (updateError) {
+          console.error("registro comprovante", updateError);
+          return json({ error: "Não foi possível registrar o comprovante. Tente novamente." }, 500);
+        }
         return json({ ok: true });
       },
     },
