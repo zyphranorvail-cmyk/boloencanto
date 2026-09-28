@@ -27,6 +27,7 @@ export type Database = {
           pix_copia_cola: string | null
           produto: string
           status: string
+          telefone: string | null
           utm: Json | null
           valor_cents: number
         }
@@ -42,6 +43,7 @@ export type Database = {
           pix_copia_cola?: string | null
           produto: string
           status?: string
+          telefone?: string | null
           utm?: Json | null
           valor_cents: number
         }
@@ -57,6 +59,7 @@ export type Database = {
           pix_copia_cola?: string | null
           produto?: string
           status?: string
+          telefone?: string | null
           utm?: Json | null
           valor_cents?: number
         }
