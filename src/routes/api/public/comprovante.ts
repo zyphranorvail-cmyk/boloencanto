@@ -31,7 +31,7 @@ export const Route = createFileRoute("/api/public/comprovante")({
 
         const path = `${id}/${crypto.randomUUID()}.${ext}`;
         const bytes = await file.arrayBuffer();
-        let uploadError: { message: string; status?: number | string } | null = null;
+        let uploadError: { message: string; status?: number | string | undefined } | null = null;
         for (let attempt = 0; attempt < 3; attempt++) {
           try {
             const { error } = await supabaseAdmin.storage
