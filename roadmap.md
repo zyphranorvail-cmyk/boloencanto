@@ -6,3 +6,5 @@
 - [x] Salvar o telefone do cliente em coluna própria do pedido e recuperar os telefones existentes.
 - [x] Corrigir falhas temporárias no envio de comprovantes e testar o envio na pré-visualização.
 - [ ] Verificar novamente o envio na página publicada após a próxima publicação (aguarda publicação).
+- [x] Incluir a nova tag do Google e impedir que visitas ao cardápio sejam contadas como compras.
+- [ ] Associar o rótulo de compra da nova tag quando o usuário o fornecer (a tag base não inclui o rótulo).

@@ -12,3 +12,4 @@
 - O catálogo estático mantém a personalização e agenda; o checkout local em `public/checkout/index.html` recebe o pedido por sessionStorage e preserva parâmetros de campanha, para reproduzir as etapas do checkout externo sem enviar dados ao gateway antigo.
 - A rota pública de PIX valida produto e preço a partir de uma lista fixa no servidor antes de cobrar, para impedir alteração de valor pelo navegador.
 - As ofertas opcionais do checkout são identificadas por IDs fixos e precificadas novamente no servidor antes da cobrança, para que seleção e valor não dependam do navegador.
+- A medição de anúncios das páginas estáticas é centralizada em `public/ads-consent.js` para não carregar a tag nem enviar eventos sem permissão regional ou após recusa.
