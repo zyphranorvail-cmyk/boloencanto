@@ -3,7 +3,7 @@
   const RECORD = 'cookie_consent_record';
   const NOTICE = 'v1: Bolos Encanto usa a tag do Google Ads para medir visitas e compras, com valor da compra e número do pedido. Dados de navegação podem ser recebidos pelo Google para medição e otimização de anúncios. Você pode aceitar, recusar ou mudar sua escolha a qualquer momento.';
   const REGIONS = ['AT','BE','BG','HR','CY','CZ','DK','EE','FI','FR','DE','GR','HU','IE','IT','LV','LT','LU','MT','NL','PL','PT','RO','SK','SI','ES','SE','IS','LI','NO','GB','CH','CA'];
-  const IDS = ['AW-18478757629','AW-18387980072','AW-18481966186','AW-18481758044','AW-18485492276'];
+  const IDS = ['AW-18478757629','AW-18387980072','AW-18481966186','AW-18481758044','AW-18485492276','AW-18488279914'];
   let regionRequired = true;
   let regionKnown = false;
   let loaded = false;
