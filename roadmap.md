@@ -9,4 +9,4 @@
 - [x] Incluir a nova tag do Google e impedir que visitas ao cardápio sejam contadas como compras.
 - [ ] Associar o rótulo de compra da tag AW-18485492276 quando o usuário o fornecer (a tag base não inclui o rótulo).
 - [x] Associar o rótulo de compra da tag AW-18488279914 à confirmação do PIX e ao envio de comprovante.
-- [ ] Criar uma URL própria de obrigado e redirecionar para ela após confirmação do PIX ou envio do comprovante, sem repetir conversões.
+- [x] Criar uma URL própria de obrigado e redirecionar para ela após confirmação do PIX ou envio do comprovante, sem repetir conversões.
