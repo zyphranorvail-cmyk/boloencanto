@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Obrigado pelo pedido | Bolos Encanto</title>
+    <meta name="description" content="Acompanhe a confirmação do seu pedido na Bolos Encanto." />
+    <meta property="og:title" content="Obrigado pelo pedido | Bolos Encanto" />
+    <meta property="og:description" content="Acompanhe a confirmação do seu pedido na Bolos Encanto." />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary" />
+    <link rel="icon" href="/favicon.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <style>
+      :root{--pink:#d62d70;--ink:#20212a;--muted:#677183;--line:#e2e5eb;--soft:#fff4f8}
+      *{box-sizing:border-box}body{margin:0;background:#fff;color:var(--ink);font:14px/1.6 Poppins,Arial,sans-serif}
+      header{border-bottom:1px solid var(--line);padding:22px 20px;text-align:center}header a{font-size:20px;font-weight:700;color:var(--pink);text-decoration:none}
+      main{width:min(100% - 40px,620px);margin:clamp(54px,10vh,120px) auto 100px;text-align:center}
+      .mark{width:72px;height:72px;margin:0 auto 26px;border-radius:50%;background:var(--soft);color:var(--pink);display:grid;place-items:center;font-size:36px;font-weight:600}
+      h1{font-size:clamp(27px,5vw,38px);line-height:1.2;margin:0 0 18px}p{margin:0 auto 16px;max-width:520px}.status{color:var(--muted)}.order{border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin:32px 0;padding:20px 0;color:var(--muted);font-size:13px;overflow-wrap:anywhere}.order strong{color:var(--ink);font-weight:600}
+      .action{display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:10px 28px;margin-top:12px;border-radius:24px;background:var(--pink);color:#fff;text-decoration:none;font-weight:600}.action:hover{filter:brightness(.95)}footer{color:var(--muted);font-size:11px;text-align:center;padding:24px}
+    </style>
+    <script src="/ads-consent.js"></script>
+  </head>
+  <body>
+    <header><a href="/cardapio/index.html">Bolos Encanto</a></header>
+    <main>
+      <div class="mark" aria-hidden="true">✓</div>
+      <h1 id="titulo">Obrigado pela preferência!</h1>
+      <p class="status" id="mensagem">Escolha seu bolo no nosso cardápio para fazer um pedido.</p>
+      <div class="order" id="pedido" hidden>Pedido <strong id="numero"></strong></div>
+      <a class="action" href="/cardapio/index.html">Voltar ao cardápio</a>
+    </main>
+    <footer>Todos os direitos reservados</footer>
+    <script>
+      const resultado=(()=>{try{return JSON.parse(sessionStorage.getItem('boloObrigado')||'null')}catch{return null}})();
+      const valido=resultado&&typeof resultado.id==='string'&&/^[0-9a-f]{8}-[0-9a-f-]{27,}$/.test(resultado.id)&&Number.isInteger(resultado.valor_cents)&&resultado.valor_cents>0&&['pago','comprovante'].includes(resultado.tipo);
+      if(valido){
+        document.getElementById('titulo').textContent='Pedido recebido!';
+        document.getElementById('mensagem').textContent=resultado.tipo==='pago'?'Pagamento confirmado. Entraremos em contato para confirmar seu pedido.':'Comprovante recebido. Aguardamos a confirmação do pagamento para preparar seu pedido.';
+        document.getElementById('numero').textContent=resultado.id;
+        document.getElementById('pedido').hidden=false;
+        function dispararConversao(){
+          const chave='boloConversao:'+resultado.id;
+          if(sessionStorage.getItem(chave)==='enviada')return;
+          const dados={value:resultado.valor_cents/100,currency:'BRL',transaction_id:resultado.id};
+          const destinos=['AW-18478757629/8ZPaCMCSkogdEP3tretE','AW-18387980072/u1n-CIzameEcEKieicBE','AW-18481758044/qWuUCIC4s4sdENz-5OxE','AW-18488279914/96mCCL6npY0dEOqG8-9E'];
+          if(!window.enviarConversaoGoogle?.(destinos[0],dados))return;
+          sessionStorage.setItem(chave,'enviada');
+          destinos.slice(1).forEach(destino=>window.enviarConversaoGoogle(destino,dados));
+        }
+        window.addEventListener('ads-consent-change',dispararConversao);
+        dispararConversao();
+      }
+    </script>
+  </body>
+</html>

@@ -34,9 +34,10 @@
     document.head.appendChild(script);
   }
   window.enviarConversaoGoogle = function (sendTo, payload) {
-    if (!allowed()) return;
+    if (!allowed()) return false;
     load();
     window.gtag('event', 'conversion', Object.assign({ send_to: sendTo }, payload));
+    return true;
   };
 
   async function lookup() {
@@ -59,6 +60,7 @@
     signal();
     if (value === 'granted') load();
     draw(false);
+    window.dispatchEvent(new Event('ads-consent-change'));
   }
   function setup() {
     const style = document.createElement('style');
@@ -90,5 +92,6 @@
     signal();
     load();
     if (banner && choice() === null && required) draw(true);
+    window.dispatchEvent(new Event('ads-consent-change'));
   });
 })();
