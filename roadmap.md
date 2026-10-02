@@ -7,4 +7,5 @@
 - [x] Corrigir falhas temporárias no envio de comprovantes e testar o envio na pré-visualização.
 - [ ] Verificar novamente o envio na página publicada após a próxima publicação (aguarda publicação).
 - [x] Incluir a nova tag do Google e impedir que visitas ao cardápio sejam contadas como compras.
-- [ ] Associar o rótulo de compra da nova tag quando o usuário o fornecer (a tag base não inclui o rótulo).
+- [ ] Associar o rótulo de compra da tag AW-18485492276 quando o usuário o fornecer (a tag base não inclui o rótulo).
+- [x] Associar o rótulo de compra da tag AW-18488279914 à confirmação do PIX e ao envio de comprovante.
