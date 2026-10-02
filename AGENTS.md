@@ -13,3 +13,4 @@
 - A rota pública de PIX valida produto e preço a partir de uma lista fixa no servidor antes de cobrar, para impedir alteração de valor pelo navegador.
 - As ofertas opcionais do checkout são identificadas por IDs fixos e precificadas novamente no servidor antes da cobrança, para que seleção e valor não dependam do navegador.
 - A medição de anúncios das páginas estáticas é centralizada em `public/ads-consent.js` para não carregar a tag nem enviar eventos sem permissão regional ou após recusa.
+- A página estática de obrigado recebe o resultado pelo sessionStorage e dispara a conversão uma vez por pedido após consentimento, para separar a confirmação do checkout sem contar recargas como novas vendas.

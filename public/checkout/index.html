@@ -149,11 +149,6 @@
                 </button>
                 <p class="error" id="arquivoErro" role="alert"></p>
               </div>
-              <div id="pagFinal" hidden class="success">
-                <div style="font-size:32px">✓</div>
-                <h2>Pedido recebido!</h2>
-                <p class="status" id="finalTexto"></p>
-              </div>
             </div>
           </section>
         </div>
@@ -252,8 +247,7 @@
       async function checarPix(){if(!pedidoId||concluido)return;try{const r=await fetch('/api/public/pix?id='+encodeURIComponent(pedidoId));if(!r.ok)return;const d=await r.json();if(d.status==='PAID'){finalizar(true)}else if(['EXPIRED','CANCELLED','FAILED'].includes(d.status)){clearInterval(timer);porId('pixStatus').textContent='PIX expirado. Volte ao cardápio e faça um novo pedido.'}}catch{}}
       async function copiarPix(){const b=porId('copiar');try{await navigator.clipboard.writeText(porId('codigo').textContent);b.textContent='Copiado! ✓';setTimeout(()=>b.textContent='Copiar código PIX',2000)}catch{porId('codigo').focus();porId('codigo').textContent+='';}}
       async function enviarComprovante(){const file=porId('arquivo').files[0],err=porId('arquivoErro'),btn=porId('enviar');if(!file||!pedidoId)return;err.textContent='';btn.disabled=true;btn.textContent='Enviando...';try{const fd=new FormData();fd.append('pedido_id',pedidoId);fd.append('arquivo',file);const r=await fetch('/api/public/comprovante',{method:'POST',body:fd});const d=await r.json();if(!r.ok)throw Error(d.error||'Falha ao enviar');finalizar(false)}catch(e){err.textContent=e.message}finally{btn.disabled=false;btn.textContent='Enviar comprovante';porId('arquivo').value=''}}
-      function finalizar(pago){concluido=true;clearInterval(timer);sessionStorage.removeItem('boloPix');porId('pagPix').hidden=true;porId('pagFinal').hidden=false;porId('finalTexto').textContent=pago?'Pagamento confirmado. Entraremos em contato para confirmar seu pedido.':'Comprovante recebido. Aguardamos a confirmação do pagamento para preparar seu pedido.';dispararConversao()}
-      function dispararConversao(){if(window.__convEnviado||!pedidoId)return;window.__convEnviado=true;try{const valor=totalCents()/100;const dados={'value':valor,'currency':'BRL','transaction_id':pedidoId};['AW-18478757629/8ZPaCMCSkogdEP3tretE','AW-18387980072/u1n-CIzameEcEKieicBE','AW-18481758044/qWuUCIC4s4sdENz-5OxE','AW-18488279914/96mCCL6npY0dEOqG8-9E'].forEach(destino=>window.enviarConversaoGoogle?.(destino,dados))}catch(e){}}
+       function finalizar(pago){if(concluido||!pedidoId)return;concluido=true;clearInterval(timer);try{sessionStorage.setItem('boloObrigado',JSON.stringify({id:pedidoId,valor_cents:totalCents(),tipo:pago?'pago':'comprovante'}));sessionStorage.removeItem('boloPix');const url=new URL('/obrigado/index.html',location.origin);const params=new URLSearchParams(location.search);['utm_source','utm_medium','utm_campaign','utm_content','utm_term','gclid','gbraid','wbraid','fbclid','ttclid','src','sck'].forEach(k=>{if(params.has(k))url.searchParams.set(k,params.get(k))});location.assign(url.href)}catch(e){concluido=false;porId('arquivoErro').textContent='Não foi possível abrir a confirmação. Tente novamente.'}}
       try{const antigo=JSON.parse(sessionStorage.getItem('boloPix')||'null');if(pedido&&antigo?.id&&antigo?.codigo){pedidoId=antigo.id;if(Array.isArray(antigo.bumps))bumpsSel=antigo.bumps.filter(id=>BUMPS.some(b=>b.id===id));['identificacao','entrega'].forEach(id=>{porId(id).className='stage done';porId(id).querySelector('.edit').hidden=true});porId('identSub').textContent='Dados informados';porId('entregaSub').textContent=pedido.entrega;porId('pagamento').className='stage active';porId('pagamento').querySelector('.stage-sub').textContent='Pague com PIX para confirmar o pedido';porId('pagPreparar').hidden=true;porId('pagPix').hidden=false;porId('qr').src=antigo.qr;porId('codigo').textContent=antigo.codigo;renderResumoBumps();atualizarTotais();timer=setInterval(checarPix,5000);checarPix()}}catch{}
     </script>
   </body>
