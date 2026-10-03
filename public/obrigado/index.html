@@ -43,13 +43,13 @@
         document.getElementById('numero').textContent=resultado.id;
         document.getElementById('pedido').hidden=false;
         function dispararConversao(){
-          const chave='boloConversao:'+resultado.id;
+          if(resultado.tipo!=='pago')return;
+          const chave='boloPurchaseConversao:'+resultado.id;
           if(sessionStorage.getItem(chave)==='enviada')return;
           const dados={value:resultado.valor_cents/100,currency:'BRL',transaction_id:resultado.id};
-          const destinos=['AW-18478757629/8ZPaCMCSkogdEP3tretE','AW-18387980072/u1n-CIzameEcEKieicBE','AW-18481758044/qWuUCIC4s4sdENz-5OxE','AW-18488279914/96mCCL6npY0dEOqG8-9E'];
-          if(!window.enviarConversaoGoogle?.(destinos[0],dados))return;
+          const destino='AW-18488279914/96mCCL6npY0dEOqG8-9E';
+          if(!window.enviarConversaoGoogle?.(destino,dados))return;
           sessionStorage.setItem(chave,'enviada');
-          destinos.slice(1).forEach(destino=>window.enviarConversaoGoogle(destino,dados));
         }
         window.addEventListener('ads-consent-change',dispararConversao);
         dispararConversao();
