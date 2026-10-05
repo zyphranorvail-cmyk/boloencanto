@@ -38,17 +38,7 @@
     "CH",
     "CA",
   ];
-  const IDS = [
-    "AW-18478757629",
-    "AW-18387980072",
-    "AW-18481966186",
-    "AW-18481758044",
-    "AW-18485492276",
-    "AW-18488279914",
-    "AW-18488217659",
-    "AW-18464575270",
-    "AW-18488279914",
-  ];
+  const IDS = ["AW-18488279914"];
   let regionRequired = true;
   let regionKnown = false;
   let loaded = false;
