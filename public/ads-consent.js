@@ -39,8 +39,7 @@
     "CA",
   ];
   const IDS = ["AW-18488279914"];
-  let regionRequired = true;
-  let regionKnown = false;
+  // Brasil e demais regiões não listadas não devem ficar bloqueadas se a consulta de região falhar.\n  // Regiões que exigem consentimento passam a ser bloqueadas somente quando confirmadas.\n  let regionRequired = false;\n  let regionKnown = false;
   let loaded = false;
   let banner;
 
@@ -131,12 +130,13 @@
   async function lookup() {
     try {
       const response = await fetch("/cdn-cgi/trace", { signal: AbortSignal.timeout(2000) });
-      if (!response.ok) return true;
+      if (!response.ok) return false;
       const code = (await response.text()).match(/^loc=([A-Z0-9]{2})$/m)?.[1];
-      if (!code || code === "XX" || code === "T1") return true;
+      if (!code || code === "XX" || code === "T1") return false;
       return REGIONS.includes(code);
     } catch {
-      return true;
+      // Se a detecção de região falhar, não bloquear o rastreamento no Brasil.
+      return false;
     }
   }
   function draw(open) {
