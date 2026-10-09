@@ -38,8 +38,11 @@
     "CH",
     "CA",
   ];
-  const IDS = ["AW-18488279914"];
-  // Brasil e demais regiões não listadas não devem ficar bloqueadas se a consulta de região falhar.\n  // Regiões que exigem consentimento passam a ser bloqueadas somente quando confirmadas.\n  let regionRequired = false;\n  let regionKnown = false;
+  const IDS = ["AW-18488279914", "AW-18503806902"];
+  // Brasil e demais regiões não listadas não devem ficar bloqueadas se a consulta de região falhar.
+  // Regiões que exigem consentimento passam a ser bloqueadas somente quando confirmadas.
+  let regionRequired = false;
+  let regionKnown = false;
   let loaded = false;
   let banner;
 
