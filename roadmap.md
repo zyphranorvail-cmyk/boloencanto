@@ -10,4 +10,4 @@
 - [ ] Associar o rótulo de compra da tag AW-18485492276 quando o usuário o fornecer (a tag base não inclui o rótulo).
 - [x] Associar o rótulo de compra da tag AW-18488279914 à confirmação do PIX e ao envio de comprovante.
 - [x] Criar uma URL própria de obrigado e redirecionar para ela após confirmação do PIX ou envio do comprovante, sem repetir conversões.
-- [ ] Restaurar a medição nativa das páginas estáticas e verificar o recebimento das visitas.
+- [x] Restaurar a medição nativa das páginas estáticas e verificar o recebimento das visitas (teste registrado: 1 visita e 4 páginas vistas; publicar para ativar para todos).
