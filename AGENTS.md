@@ -14,3 +14,4 @@
 - As ofertas opcionais do checkout são identificadas por IDs fixos e precificadas novamente no servidor antes da cobrança, para que seleção e valor não dependam do navegador.
 - A medição de anúncios das páginas estáticas é centralizada em `public/ads-consent.js` para não carregar a tag nem enviar eventos sem permissão regional ou após recusa.
 - A página estática de obrigado recebe o resultado pelo sessionStorage e dispara a conversão uma vez por pedido após consentimento, para separar a confirmação do checkout sem contar recargas como novas vendas.
+- Static content pages must include Lovable's native same-origin analytics script (`/~flock.js` with `data-proxy-url="/~api/analytics"`) exactly once, because direct public HTML responses bypass automatic app-shell injection; do not collect checkout field values in analytics.
